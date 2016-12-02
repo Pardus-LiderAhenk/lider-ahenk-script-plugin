@@ -98,7 +98,7 @@
 					<instructions>
 						<_removeheaders>Import-Service,Export-Service</_removeheaders>
 						<Bundle-SymbolicName>lider-script</Bundle-SymbolicName>
-						<Bundle-Version>1.0.0</Bundle-Version>
+						<Bundle-Version>1.0.0-alfa</Bundle-Version>
 						<!-- If the plugin also have a *-db bundle, then use this line instead: -->
 						<Import-Package>tr.org.liderahenk.script.entities.*, tr.org.liderahenk.script.enums.*, !tr.org.liderahenk.script.*, *</Import-Package>
 					</instructions>

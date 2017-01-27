@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>tr.org.liderahenk</groupId>
 		<artifactId>script</artifactId>
-		<version>1.0.0-beta</version>
+		<version>1.0.0</version>
 	</parent>
 
 	<artifactId>lider-script</artifactId>
@@ -41,7 +41,7 @@
 		<dependency>
 			<groupId>tr.org.liderahenk</groupId>
 			<artifactId>lider-script-db</artifactId>
-			<version>1.0.0-beta</version>
+			<version>1.0.0</version>
 			<type>bundle</type>
 		</dependency>
 	</dependencies>
@@ -98,7 +98,7 @@
 					<instructions>
 						<_removeheaders>Import-Service,Export-Service</_removeheaders>
 						<Bundle-SymbolicName>lider-script</Bundle-SymbolicName>
-						<Bundle-Version>1.0.0-beta</Bundle-Version>
+						<Bundle-Version>1.0.0</Bundle-Version>
 						<!-- If the plugin also have a *-db bundle, then use this line instead: -->
 						<Import-Package>tr.org.liderahenk.script.entities.*, tr.org.liderahenk.script.enums.*, !tr.org.liderahenk.script.*, *</Import-Package>
 					</instructions>

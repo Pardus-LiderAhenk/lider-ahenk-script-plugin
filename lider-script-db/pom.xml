@@ -40,10 +40,10 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-						<_removeheaders>Import-Service,Export-Service</_removeheaders>	
+						<_removeheaders>Import-Service,Export-Service</_removeheaders>
 						<Fragment-Host>lider-persistence-mariadb;bundle-version="[1.0.0,2)"</Fragment-Host>
 						<Bundle-SymbolicName>lider-script-db</Bundle-SymbolicName>
-						<Bundle-Version>1.0.0</Bundle-Version>
+						<Bundle-Version>1.0.0-beta</Bundle-Version>
 					</instructions>
 				</configuration>
 			</plugin>

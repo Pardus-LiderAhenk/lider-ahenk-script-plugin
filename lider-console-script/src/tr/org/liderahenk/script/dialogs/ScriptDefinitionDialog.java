@@ -76,7 +76,7 @@ public class ScriptDefinitionDialog extends DefaultLiderDialog {
 		lblLabel.setText(Messages.getString("SCRIPT_LABEL"));
 
 		txtLabel = new Text(composite, SWT.BORDER);
-		txtLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		txtLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		if (selectedScript != null && selectedScript.getLabel() != null) {
 			txtLabel.setText(selectedScript.getLabel());
 		}
@@ -204,3 +204,4 @@ public class ScriptDefinitionDialog extends DefaultLiderDialog {
 	}
 
 }
+

@@ -37,7 +37,7 @@ public class ScriptFile implements Serializable {
 	@Column(name = "SCRIPT_TYPE", length = 1, nullable = false)
 	private Integer scriptType;
 
-	@Column(name = "LABEL", nullable = false, length = 255)
+	@Column(name = "LABEL", nullable = false, unique = true, length = 255)
 	private String label;
 
 	@Lob
@@ -117,3 +117,4 @@ public class ScriptFile implements Serializable {
 	}
 
 }
+

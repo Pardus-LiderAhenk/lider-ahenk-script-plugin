@@ -104,10 +104,10 @@
 		<plugin name="script" label="%plugin.label" />
   	</extension>
   
-  
+  	<!-- Add extension point contribution for "task execution" dialogs -->
   	 <extension
   		point="tr.org.liderahenk.liderconsole.core.taskmenu">
-  		<taskItem label="%command.task" pluginName="script" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.ExecuteScriptTask" />
+  		<taskItem label="%command.execute.script.task" pluginName="script" pluginVersion="1.0.0" taskCommandId="tr.org.liderahenk.liderconsole.commands.ExecuteScriptTask" />
   	</extension>
   
 </plugin>

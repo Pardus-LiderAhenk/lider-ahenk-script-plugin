@@ -108,7 +108,7 @@
   	 <extension
   		point="tr.org.liderahenk.liderconsole.core.taskmenu">
   		<taskItem label="%command.execute.script.task" pluginName="script" 
-  		pluginVersion="1.0.0" 
+  		pluginVersion="1.1" 
   		taskCommandId="tr.org.liderahenk.liderconsole.commands.ExecuteScriptTask" 
   		selectionType="multi" description="Betik eklentisi, özel olarak yazılmış betik dosyalarının Ahenk makine/lerde çalıştırılmasını sağlayan bir görev eklentisidir.&#xA;Betik çalıştırmak için tıklayınız.." 
   		imagePath="script-run.png"/>

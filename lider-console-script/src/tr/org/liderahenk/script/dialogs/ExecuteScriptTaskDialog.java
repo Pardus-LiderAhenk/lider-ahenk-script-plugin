@@ -8,6 +8,8 @@ import java.util.Set;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -27,6 +29,7 @@ import tr.org.liderahenk.liderconsole.core.widgets.Notifier;
 import tr.org.liderahenk.script.constants.ScriptConstants;
 import tr.org.liderahenk.script.i18n.Messages;
 import tr.org.liderahenk.script.model.ScriptFile;
+import tr.org.liderahenk.script.model.ScriptType;
 
 /**
  * Task execution dialog for script plugin.
@@ -40,7 +43,8 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 
 	private Combo cmbScriptFile;
 	private Text txtScriptParams;
-
+	private Text txtContents;
+	
 	public ExecuteScriptTaskDialog(Shell parentShell, Set<String> dnSet) {
 		super(parentShell, dnSet);
 	}
@@ -54,7 +58,7 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 	public Control createTaskDialogArea(Composite parent) {
 
 		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayout(new GridLayout(2, false));
+		composite.setLayout(new GridLayout(1, false));
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
 		Label lblScript = new Label(composite, SWT.NONE);
@@ -63,6 +67,25 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 
 		cmbScriptFile = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY);
 		cmbScriptFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+
+
+		Label lblScriptParams = new Label(composite, SWT.NONE);
+		lblScriptParams.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		lblScriptParams.setText(Messages.getString("SCRIPT_PARAMETERS"));
+
+		txtScriptParams = new Text(composite, SWT.BORDER);
+		txtScriptParams.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+		// Contents
+		Label lblContents = new Label(composite, SWT.NONE);
+		lblContents.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
+		lblContents.setText(Messages.getString("CONTENTS"));
+
+		txtContents = new Text(composite, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
+		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+		gridData.heightHint = 350;
+		txtContents.setLayoutData(gridData);
+		
 		try {
 			IResponse response = TaskRestUtils.execute(ScriptConstants.PLUGIN_NAME, ScriptConstants.PLUGIN_VERSION,
 					"LIST_SCRIPTS");
@@ -75,6 +98,9 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 						ScriptFile script = scripts.get(i);
 						cmbScriptFile.add(script.getLabel() + " " + script.getCreateDate());
 						cmbScriptFile.setData(i + "", script);
+						if (i == 0) {
+							txtContents.setText(script.getContents());
+						}
 					}
 					cmbScriptFile.select(0);
 				}
@@ -83,14 +109,17 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 			logger.error(e.getMessage(), e);
 			Notifier.error(null, Messages.getString("ERROR_ON_LIST"));
 		}
+		
+		cmbScriptFile.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				txtContents.setText(getSelectedScript().getContents());
+			}
 
-		Label lblScriptParams = new Label(composite, SWT.NONE);
-		lblScriptParams.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
-		lblScriptParams.setText(Messages.getString("SCRIPT_PARAMETERS"));
-
-		txtScriptParams = new Text(composite, SWT.BORDER);
-		txtScriptParams.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+			}
+		});
 		return composite;
 	}
 
@@ -107,6 +136,7 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 		parameterMap.put("SCRIPT_FILE_ID", getSelectedScript().getId());
 		// SCRIPT_PARAMS may contain script parameters or it can be empty string
 		parameterMap.put("SCRIPT_PARAMS", txtScriptParams.getText());
+		parameterMap.put("SCRIPT_CONTENTS", txtContents.getText());
 		return parameterMap;
 	}
 

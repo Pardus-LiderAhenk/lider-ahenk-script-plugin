@@ -42,7 +42,7 @@ public class ExecuteScriptCommand implements ICommand {
 		logger.info("Found script file with ID: {}", scriptId);
 
 		// Add contents and type to parameter map
-		parameterMap.put("SCRIPT_CONTENTS", script.getContents());
+		//parameterMap.put("SCRIPT_CONTENTS", script.getContents());
 		parameterMap.put("SCRIPT_TYPE", script.getScriptType().toString());
 
 		return resultFactory.create(CommandResultStatus.OK, new ArrayList<String>(), this);

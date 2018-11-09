@@ -7,7 +7,12 @@
 		<category
             id="tr.org.liderahenk.liderconsole.commands.category"
             name="%commands.category">
-		</category>         
+		</category>
+      <command
+            categoryId="tr.org.liderahenk.liderconsole.commands.category"
+            id="tr.org.liderahenk.liderconsole.commands.ScriptProfile"            
+            name="%command.profile">
+      </command>       
 		<command
             categoryId="tr.org.liderahenk.liderconsole.commands.category"
             id="tr.org.liderahenk.liderconsole.commands.ScriptDefinition"            
@@ -22,7 +27,11 @@
    
 	<extension
        point="org.eclipse.ui.handlers">
-
+		<!-- Profile handler -->
+       	<handler
+            class="tr.org.liderahenk.script.handlers.ScriptProfileHandler"
+            commandId="tr.org.liderahenk.liderconsole.commands.ScriptProfile">
+      	</handler>
 		<!-- Script definition handler -->
        	<handler
             class="tr.org.liderahenk.script.handlers.ScriptDefinitionHandler"
@@ -39,7 +48,18 @@
   
 	<extension
          point="org.eclipse.ui.menus">
-
+         
+		<!-- Add menu command for "profile definition" dialog -->
+		<menuContribution
+            locationURI="menu:tr.org.liderahenk.liderconsole.menus.ProfileDefinition?after=additions">
+ 				<command
+                  commandId="tr.org.liderahenk.liderconsole.commands.ScriptProfile"
+                  id="tr.org.liderahenk.liderconsole.commands.ScriptProfile"
+                  tooltip="%command.profile"
+                  icon="icons/16/script-definition.png">
+           		</command>
+		</menuContribution>
+		
 		<!-- Add menu command for script definition editor -->
 		<menuContribution
             locationURI="menu:tr.org.liderahenk.liderconsole.menus.LiderMain?after=additions">
@@ -85,7 +105,14 @@
            		</command>
 		</menuContribution>
 	</extension>
-  
+
+	<!-- Add extension point contribution for "policy execution" dialogs -->
+	<extension
+  		point="tr.org.liderahenk.liderconsole.core.policymenu">
+  		<policyItem label="%command.profile" pluginName="script" pluginVersion="1.0.0" 
+  		profileCommandId="tr.org.liderahenk.liderconsole.commands.ScriptProfile" />
+  	</extension>
+  	
 	<extension
 		point="org.eclipse.ui.editors">
 		<editor

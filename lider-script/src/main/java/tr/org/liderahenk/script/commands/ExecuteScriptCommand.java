@@ -37,13 +37,13 @@ public class ExecuteScriptCommand implements ICommand {
 		Map<String, Object> parameterMap = request.getParameterMap();
 
 		// Find script file
-		Long scriptId = new Long(parameterMap.get("SCRIPT_FILE_ID").toString());
-		ScriptFile script = dbService.find(ScriptFile.class, scriptId);
-		logger.info("Found script file with ID: {}", scriptId);
+//		Long scriptId = new Long(parameterMap.get("SCRIPT_FILE_ID").toString());
+//		ScriptFile script = dbService.find(ScriptFile.class, scriptId);
+//		logger.info("Found script file with ID: {}", scriptId);
 
 		// Add contents and type to parameter map
 		//parameterMap.put("SCRIPT_CONTENTS", script.getContents());
-		parameterMap.put("SCRIPT_TYPE", script.getScriptType().toString());
+		//parameterMap.put("SCRIPT_TYPE", script.getScriptType().toString());
 
 		return resultFactory.create(CommandResultStatus.OK, new ArrayList<String>(), this);
 	}

@@ -1,5 +1,11 @@
 package tr.org.liderahenk.script.dialogs;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +31,7 @@ import tr.org.liderahenk.liderconsole.core.dialogs.DefaultTaskDialog;
 import tr.org.liderahenk.liderconsole.core.exceptions.ValidationException;
 import tr.org.liderahenk.liderconsole.core.rest.responses.IResponse;
 import tr.org.liderahenk.liderconsole.core.rest.utils.TaskRestUtils;
+import tr.org.liderahenk.liderconsole.core.utils.SWTResourceManager;
 import tr.org.liderahenk.liderconsole.core.widgets.Notifier;
 import tr.org.liderahenk.script.constants.ScriptConstants;
 import tr.org.liderahenk.script.i18n.Messages;
@@ -44,6 +51,8 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 	private Combo cmbScriptFile;
 	private Text txtScriptParams;
 	private Text txtContents;
+	
+	private List<ScriptFile> scripts;
 	
 	public ExecuteScriptTaskDialog(Shell parentShell, Set<String> dnSet) {
 		super(parentShell, dnSet);
@@ -85,15 +94,19 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gridData.heightHint = 350;
 		txtContents.setLayoutData(gridData);
-		
+		populateTemplates();
 		try {
 			IResponse response = TaskRestUtils.execute(ScriptConstants.PLUGIN_NAME, ScriptConstants.PLUGIN_VERSION,
 					"LIST_SCRIPTS");
 			if (response != null && response.getResultMap() != null && response.getResultMap().get("SCRIPTS") != null) {
-				List<ScriptFile> scripts = new ObjectMapper().readValue(
+				List<ScriptFile> scriptsUser = new ObjectMapper().readValue(
 						response.getResultMap().get("SCRIPTS").toString(), new TypeReference<List<ScriptFile>>() {
 						});
+				if(scriptsUser != null) {
+					scripts.addAll(scriptsUser);
+				}
 				if (scripts != null && !scripts.isEmpty()) {
+					
 					for (int i = 0; i < scripts.size(); i++) {
 						ScriptFile script = scripts.get(i);
 						cmbScriptFile.add(script.getLabel() + " " + script.getCreateDate());
@@ -137,6 +150,7 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 		// SCRIPT_PARAMS may contain script parameters or it can be empty string
 		parameterMap.put("SCRIPT_PARAMS", txtScriptParams.getText());
 		parameterMap.put("SCRIPT_CONTENTS", txtContents.getText());
+		parameterMap.put("SCRIPT_TYPE", getSelectedScript().getScriptType().toString());
 		return parameterMap;
 	}
 
@@ -164,4 +178,64 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 		return null;
 	}
 
+	private void populateTemplates() {
+		String path = SWTResourceManager.getAbsolutePath(ScriptConstants.PLUGIN_ID.SCRIPT, "template/");
+		ScriptFile scriptFile = null;
+		if (path != null) {
+			File file = new File(path);
+			if (file.isDirectory()) {
+				File[] templates = file.listFiles();
+				if(templates != null) {
+					scripts = new ArrayList<ScriptFile>();
+					String fileName;
+					for (int i = 0; i < templates.length; i++) {
+						scriptFile = new ScriptFile();
+						fileName = templates[i].getName();
+						
+						scriptFile.setCreateDate(new Date());
+						if(templates[i].getPath().endsWith(".sh")) {
+							scriptFile.setScriptType(ScriptType.BASH);
+							fileName = fileName.replace(".sh", "");
+						} else if(templates[i].getPath().endsWith(".py")) {
+							scriptFile.setScriptType(ScriptType.PYTHON);
+							fileName = fileName.replace(".py", "");
+						} else if(templates[i].getPath().endsWith(".pl")) {
+							scriptFile.setScriptType(ScriptType.PERL);
+							fileName = fileName.replace(".pl", "");
+						} else if(templates[i].getPath().endsWith(".rb")) {
+							scriptFile.setScriptType(ScriptType.RUBY);
+							fileName = fileName.replace(".rb", "");
+						}
+						scriptFile.setLabel(fileName.replace("_", " "));
+						scriptFile.setIsTemplate(true);
+						scripts.add(scriptFile);
+						
+						File scriptTemplateFile = templates[i];
+						BufferedReader br = null;
+						try {
+							br = new BufferedReader(new FileReader(scriptTemplateFile));
+							StringBuilder contents = new StringBuilder();
+							String line = null;
+							while ((line = br.readLine()) != null) {
+								contents.append(line);
+								contents.append("\n");
+							}
+							scriptFile.setContents(contents.toString());
+							
+						} catch (Exception e1) {
+							logger.error(e1.getMessage(), e1);
+						} finally {
+							if (br != null) {
+								try {
+									br.close();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

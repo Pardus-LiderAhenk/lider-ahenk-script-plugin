@@ -45,7 +45,7 @@ public class ScriptDefinitionDialog extends DefaultLiderDialog {
 	private Combo cmbType;
 	private Text txtLabel;
 	private Text txtContents;
-
+	
 	public ScriptDefinitionDialog(Shell parentShell, ScriptDefinitionEditor editor) {
 		super(parentShell);
 		this.editor = editor;
@@ -62,13 +62,13 @@ public class ScriptDefinitionDialog extends DefaultLiderDialog {
 	 */
 	@Override
 	protected Control createDialogArea(Composite parent) {
-
+		
 		parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		parent.setLayout(new GridLayout(1, false));
 
 		Composite composite = (Composite) super.createDialogArea(parent);
 		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		composite.setLayout(new GridLayout(2, false));
+		composite.setLayout(new GridLayout(1, false));
 
 		// Script label
 		Label lblLabel = new Label(composite, SWT.NONE);
@@ -125,6 +125,7 @@ public class ScriptDefinitionDialog extends DefaultLiderDialog {
 		txtContents = new Text(composite, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 		gridData.heightHint = 150;
+		gridData.widthHint = 600;
 		txtContents.setLayoutData(gridData);
 		if (selectedScript != null && selectedScript.getContents() != null) {
 			txtContents.setText(selectedScript.getContents());
@@ -136,6 +137,11 @@ public class ScriptDefinitionDialog extends DefaultLiderDialog {
 		}
 
 		applyDialogFont(composite);
+		if(selectedScript != null && selectedScript.getIsTemplate()) {
+			cmbType.setEnabled(false);
+			txtLabel.setEnabled(false);
+			txtContents.setEditable(false);
+		}
 		return composite;
 	}
 
@@ -146,47 +152,51 @@ public class ScriptDefinitionDialog extends DefaultLiderDialog {
 	protected void okPressed() {
 
 		setReturnCode(OK);
-
-		if (txtLabel.getText().isEmpty()) {
-			Notifier.warning(null, Messages.getString("FILL_LABEL_FIELD"));
-			return;
+		if(selectedScript != null && selectedScript.getIsTemplate()) {
+			close();
 		}
-		if (txtContents.getText().isEmpty()) {
-			Notifier.warning(null, Messages.getString("FILL_CONTENTS_FIELD"));
-			return;
-		}
-		if (getSelectedType() == null) {
-			Notifier.warning(null, Messages.getString("SELECT_TYPE"));
-			return;
-		}
+		else {
+			if (txtLabel.getText().isEmpty()) {
+				Notifier.warning(null, Messages.getString("FILL_LABEL_FIELD"));
+				return;
+			}
+			if (txtContents.getText().isEmpty()) {
+				Notifier.warning(null, Messages.getString("FILL_CONTENTS_FIELD"));
+				return;
+			}
+			if (getSelectedType() == null) {
+				Notifier.warning(null, Messages.getString("SELECT_TYPE"));
+				return;
+			}
 
-		ScriptFile script = new ScriptFile();
-		if (selectedScript != null) {
-			script.setId(selectedScript.getId());
-			script.setCreateDate(selectedScript.getCreateDate());
-		} else {
-			script.setCreateDate(new Date());
+			ScriptFile script = new ScriptFile();
+			if (selectedScript != null) {
+				script.setId(selectedScript.getId());
+				script.setCreateDate(selectedScript.getCreateDate());
+			} else {
+				script.setCreateDate(new Date());
+			}
+			script.setLabel(txtLabel.getText());
+			script.setScriptType(getSelectedType());
+			script.setContents(txtContents.getText());
+			script.setModifyDate(new Date());
+
+			Map<String, Object> parameterMap = new HashMap<String, Object>();
+			parameterMap.put("SCRIPT", script);
+			TaskRequest task = new TaskRequest(null, null, ScriptConstants.PLUGIN_NAME, ScriptConstants.PLUGIN_VERSION,
+					"SAVE_SCRIPT", parameterMap, null, null, new Date());
+			logger.debug("Script request: {}", task);
+
+			try {
+				TaskRestUtils.execute(task);
+				editor.refresh();
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				Notifier.error(null, Messages.getString("ERROR_ON_SAVE"));
+			}
+
+			close();
 		}
-		script.setLabel(txtLabel.getText());
-		script.setScriptType(getSelectedType());
-		script.setContents(txtContents.getText());
-		script.setModifyDate(new Date());
-
-		Map<String, Object> parameterMap = new HashMap<String, Object>();
-		parameterMap.put("SCRIPT", script);
-		TaskRequest task = new TaskRequest(null, null, ScriptConstants.PLUGIN_NAME, ScriptConstants.PLUGIN_VERSION,
-				"SAVE_SCRIPT", parameterMap, null, null, new Date());
-		logger.debug("Script request: {}", task);
-
-		try {
-			TaskRestUtils.execute(task);
-			editor.refresh();
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-			Notifier.error(null, Messages.getString("ERROR_ON_SAVE"));
-		}
-
-		close();
 	}
 
 	@Override

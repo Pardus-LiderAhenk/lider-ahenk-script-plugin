@@ -27,7 +27,10 @@ public class ScriptFile implements Serializable {
 
 	private Date modifyDate;
 
+	private Boolean isTemplate;
+	
 	public ScriptFile() {
+		this.isTemplate = false;
 	}
 
 	public ScriptFile(Long id, ScriptType scriptType, String label, String contents, Date createDate, Date modifyDate) {
@@ -37,6 +40,7 @@ public class ScriptFile implements Serializable {
 		this.contents = contents;
 		this.createDate = createDate;
 		this.modifyDate = modifyDate;
+		this.isTemplate = false;
 	}
 
 	public Long getId() {
@@ -85,6 +89,14 @@ public class ScriptFile implements Serializable {
 
 	public void setModifyDate(Date modifyDate) {
 		this.modifyDate = modifyDate;
+	}
+
+	public Boolean getIsTemplate() {
+		return isTemplate;
+	}
+
+	public void setIsTemplate(Boolean isTemplate) {
+		this.isTemplate = isTemplate;
 	}
 
 }

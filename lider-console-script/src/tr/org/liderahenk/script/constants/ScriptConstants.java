@@ -22,5 +22,8 @@ public class ScriptConstants {
 		public static final String PERL = "#!/usr/bin/perl\nuse strict;\nuse warnings;\n\n";
 		public static final String PYTHON = "#!/usr/bin/python\n# -*- coding: utf-8 -*-\n\n";
 	}
-
+	
+	public static final class PLUGIN_ID {
+		public static final String SCRIPT = "lider-console-script";
+	}
 }

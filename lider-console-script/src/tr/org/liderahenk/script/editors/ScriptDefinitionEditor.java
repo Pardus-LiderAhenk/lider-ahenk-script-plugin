@@ -1,5 +1,9 @@
 package tr.org.liderahenk.script.editors;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,6 +53,7 @@ import tr.org.liderahenk.script.constants.ScriptConstants;
 import tr.org.liderahenk.script.dialogs.ScriptDefinitionDialog;
 import tr.org.liderahenk.script.i18n.Messages;
 import tr.org.liderahenk.script.model.ScriptFile;
+import tr.org.liderahenk.script.model.ScriptType;
 
 /**
  * Editor class for script definitions.
@@ -69,6 +74,8 @@ public class ScriptDefinitionEditor extends EditorPart {
 	private Button btnRefreshScript;
 
 	private ScriptFile selectedScript;
+	
+	private List<ScriptFile> scripts;
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
@@ -94,7 +101,7 @@ public class ScriptDefinitionEditor extends EditorPart {
 	public boolean isSaveAsAllowed() {
 		return false;
 	}
-
+	
 	@Override
 	public void createPartControl(Composite parent) {
 		parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -215,8 +222,8 @@ public class ScriptDefinitionEditor extends EditorPart {
 
 		tableViewer = SWTResourceManager.createTableViewer(parent);
 		createTableColumns();
-		populateTable();
-
+		//populateTable();
+		populateTemplates();
 		// Hook up listeners
 		tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
@@ -226,8 +233,14 @@ public class ScriptDefinitionEditor extends EditorPart {
 				if (firstElement instanceof ScriptFile) {
 					setSelectedScript((ScriptFile) firstElement);
 				}
-				btnEditScript.setEnabled(true);
-				btnDeleteScript.setEnabled(true);
+				if(getSelectedScript().getIsTemplate()) {
+					btnEditScript.setEnabled(false);
+					btnDeleteScript.setEnabled(false);
+				}
+				else {
+					btnEditScript.setEnabled(true);
+					btnDeleteScript.setEnabled(true);
+				}
 			}
 		});
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
@@ -371,11 +384,14 @@ public class ScriptDefinitionEditor extends EditorPart {
 		try {
 			IResponse response = TaskRestUtils.execute(ScriptConstants.PLUGIN_NAME, ScriptConstants.PLUGIN_VERSION,
 					"LIST_SCRIPTS");
-			List<ScriptFile> scripts = null;
+			List<ScriptFile> scriptsUser = null;
 			if (response != null && response.getResultMap() != null && response.getResultMap().get("SCRIPTS") != null) {
-				scripts = new ObjectMapper().readValue(response.getResultMap().get("SCRIPTS").toString(),
+				scriptsUser = new ObjectMapper().readValue(response.getResultMap().get("SCRIPTS").toString(),
 						new TypeReference<List<ScriptFile>>() {
 						});
+			}
+			if(scriptsUser != null) {
+				scripts.addAll(scriptsUser);
 			}
 			tableViewer.setInput(scripts != null ? scripts : new ArrayList<ScriptFile>());
 		} catch (Exception e) {
@@ -389,7 +405,8 @@ public class ScriptDefinitionEditor extends EditorPart {
 	 * 
 	 */
 	public void refresh() {
-		populateTable();
+		//populateTable();
+		populateTemplates();
 		tableViewer.refresh();
 	}
 
@@ -405,4 +422,68 @@ public class ScriptDefinitionEditor extends EditorPart {
 		this.selectedScript = selectedScript;
 	}
 
+	private void populateTemplates() {
+		String path = SWTResourceManager.getAbsolutePath(ScriptConstants.PLUGIN_ID.SCRIPT, "template/");
+		ScriptFile scriptFile = null;
+		if (path != null) {
+			File file = new File(path);
+			if (file.isDirectory()) {
+				File[] templates = file.listFiles();
+				if(templates != null) {
+					scripts = new ArrayList<ScriptFile>();
+					String fileName;
+					for (int i = 0; i < templates.length; i++) {
+						scriptFile = new ScriptFile();
+						fileName = templates[i].getName();
+						
+						scriptFile.setCreateDate(new Date());
+						if(templates[i].getPath().endsWith(".sh")) {
+							scriptFile.setScriptType(ScriptType.BASH);
+							fileName = fileName.replace(".sh", "");
+						}
+						else if(templates[i].getPath().endsWith(".py")) {
+							scriptFile.setScriptType(ScriptType.PYTHON);
+							fileName = fileName.replace(".py", "");
+						}
+						else if(templates[i].getPath().endsWith(".pl")) {
+							scriptFile.setScriptType(ScriptType.PERL);
+							fileName = fileName.replace(".pl", "");
+						}
+						else if(templates[i].getPath().endsWith(".rb")) {
+							scriptFile.setScriptType(ScriptType.RUBY);
+							fileName = fileName.replace(".rb", "");
+						}
+						scriptFile.setLabel(fileName.replace("_", " "));
+						scriptFile.setIsTemplate(true);
+						scripts.add(scriptFile);
+						
+						File scriptTemplateFile = templates[i];
+						BufferedReader br = null;
+						try {
+							br = new BufferedReader(new FileReader(scriptTemplateFile));
+							StringBuilder contents = new StringBuilder();
+							String line = null;
+							while ((line = br.readLine()) != null) {
+								contents.append(line);
+								contents.append("\n");
+							}
+							scriptFile.setContents(contents.toString());
+							
+						} catch (Exception e1) {
+							logger.error(e1.getMessage(), e1);
+						} finally {
+							if (br != null) {
+								try {
+									br.close();
+								} catch (IOException e) {
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+					populateTable();
+				}
+			}
+		}
+	}
 }

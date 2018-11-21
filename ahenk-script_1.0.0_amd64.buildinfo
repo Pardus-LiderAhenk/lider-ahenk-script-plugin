@@ -4,14 +4,14 @@ Binary: ahenk-script
 Architecture: amd64
 Version: 1.0.0
 Checksums-Md5:
- e1f91d19a83a27c0c709c33e2ace75f4 2810 ahenk-script_1.0.0_amd64.deb
+ 204ccfea0838038c085713629a9b1853 2782 ahenk-script_1.0.0_amd64.deb
 Checksums-Sha1:
- a6c243592410f9255b5d30a32d16411a64de5051 2810 ahenk-script_1.0.0_amd64.deb
+ a083ba3eea32a70ea2e5f934425d609a983b9531 2782 ahenk-script_1.0.0_amd64.deb
 Checksums-Sha256:
- 9cbd7d371bb00947feef88b579a79f6fd7ba34ef6500eb6e647f311c5cd31b61 2810 ahenk-script_1.0.0_amd64.deb
+ 510aefdd4165448e444cc0e2948890a91d1c8cfbf86418ca6a9504b0983a8934 2782 ahenk-script_1.0.0_amd64.deb
 Build-Origin: Pardus
 Build-Architecture: amd64
-Build-Date: Fri, 09 Nov 2018 10:03:25 +0300
+Build-Date: Thu, 15 Nov 2018 16:44:06 +0300
 Installed-Build-Depends:
  autoconf (= 2.69-10),
  automake (= 1:1.15-6),

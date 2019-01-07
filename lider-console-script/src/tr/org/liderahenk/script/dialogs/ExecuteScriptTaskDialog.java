@@ -117,6 +117,16 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 					}
 					cmbScriptFile.select(0);
 				}
+			} else {
+				for (int i = 0; i < scripts.size(); i++) {
+					ScriptFile script = scripts.get(i);
+					cmbScriptFile.add(script.getLabel() + " " + script.getCreateDate());
+					cmbScriptFile.setData(i + "", script);
+					if (i == 0) {
+						txtContents.setText(script.getContents());
+					}
+				}
+				cmbScriptFile.select(0);
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

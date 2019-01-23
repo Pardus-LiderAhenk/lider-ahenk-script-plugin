@@ -135,17 +135,44 @@ public class ScriptProfileDialog implements IProfileDialog {
 					scripts.addAll(scriptsUser);
 				}
 				if (scripts != null && !scripts.isEmpty()) {
-					
 					for (int i = 0; i < scripts.size(); i++) {
 						ScriptFile script = scripts.get(i);
-						cmbScriptFile.add(script.getLabel());
+						if(script.getCreateDate() == null) {
+							cmbScriptFile.add(script.getLabel());
+						} else {
+							cmbScriptFile.add(script.getLabel() + " " + script.getCreateDate());
+						}
+						
 						cmbScriptFile.setData(i + "", script);
 						if (i == 0) {
 							txtContents.setText(script.getContents());
 						}
 					}
 					cmbScriptFile.select(0);
+				} else {
+					txtScriptParams.setEnabled(false);
+					txtContents.setEnabled(false);
 				}
+			} else {
+				if (scripts != null && !scripts.isEmpty()) {
+					for (int i = 0; i < scripts.size(); i++) {
+						ScriptFile script = scripts.get(i);
+						if(script.getCreateDate() == null) {
+							cmbScriptFile.add(script.getLabel());
+						} else {
+							cmbScriptFile.add(script.getLabel() + " " + script.getCreateDate());
+						}
+						cmbScriptFile.setData(i + "", script);
+						if (i == 0) {
+							txtContents.setText(script.getContents());
+						}
+					}
+					cmbScriptFile.select(0);
+				} else {
+					txtScriptParams.setEnabled(false);
+					txtContents.setEnabled(false);
+				}
+
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);

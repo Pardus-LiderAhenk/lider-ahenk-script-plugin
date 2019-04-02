@@ -11,7 +11,7 @@ Checksums-Sha256:
  510aefdd4165448e444cc0e2948890a91d1c8cfbf86418ca6a9504b0983a8934 2782 ahenk-script_1.0.0_amd64.deb
 Build-Origin: Pardus
 Build-Architecture: amd64
-Build-Date: Thu, 15 Nov 2018 16:44:06 +0300
+Build-Date: Tue, 26 Feb 2019 09:44:43 +0300
 Installed-Build-Depends:
  autoconf (= 2.69-10),
  automake (= 1:1.15-6),

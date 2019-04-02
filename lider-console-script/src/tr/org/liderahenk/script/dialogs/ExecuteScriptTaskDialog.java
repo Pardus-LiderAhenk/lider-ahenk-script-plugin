@@ -199,6 +199,7 @@ public class ExecuteScriptTaskDialog extends DefaultTaskDialog {
 	private void populateTemplates() {
 		String path = SWTResourceManager.getAbsolutePath(ScriptConstants.PLUGIN_ID.SCRIPT, "template/");
 		ScriptFile scriptFile = null;
+		scripts = new ArrayList<ScriptFile>();
 		if (path != null) {
 			File file = new File(path);
 			if (file.isDirectory()) {

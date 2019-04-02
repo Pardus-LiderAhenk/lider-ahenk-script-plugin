@@ -425,12 +425,13 @@ public class ScriptDefinitionEditor extends EditorPart {
 	private void populateTemplates() {
 		String path = SWTResourceManager.getAbsolutePath(ScriptConstants.PLUGIN_ID.SCRIPT, "template/");
 		ScriptFile scriptFile = null;
+		scripts = new ArrayList<ScriptFile>();
 		if (path != null) {
 			File file = new File(path);
 			if (file.isDirectory()) {
 				File[] templates = file.listFiles();
 				if(templates != null) {
-					scripts = new ArrayList<ScriptFile>();
+					
 					String fileName;
 					for (int i = 0; i < templates.length; i++) {
 						scriptFile = new ScriptFile();
@@ -485,5 +486,9 @@ public class ScriptDefinitionEditor extends EditorPart {
 				}
 			}
 		}
+		else {
+			populateTable();
+		}
 	}
+
 }
